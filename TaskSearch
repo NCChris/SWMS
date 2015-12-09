@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+
+
+<head>
+<script src="https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SiteAssets/jquery-1.11.3.min.js" type="text/javascript"></script>
+<script src="https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SiteAssets/jquery.SPServices.js" type="text/javascript"></script>
+<script src="https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SiteAssets/jquery.cookie.js" type="text/javascript"></script>
+<link rel="stylesheet" href="https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SiteAssets/pureStyle/tables.css">
+<link rel="stylesheet" href="https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SiteAssets/SWMS_style.css">
+
+<title>Home page html and javascript updated 10.8.2015</title><html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:_dlc_DocId msdt:dt="string">U7DTEYND4AN6-375-18</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">8e240257-177e-4ef3-9f2c-08b8c5cdfbfe</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/_layouts/DocIdRedir.aspx?ID=U7DTEYND4AN6-375-18, U7DTEYND4AN6-375-18</mso:_dlc_DocIdUrl>
+<mso:ReleaseVersion msdt:dt="string"></mso:ReleaseVersion>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+
+</head>
+<body>
+
+<div style="width:250px; text-align:center; ">
+<input id="btnApply" type="button" value="Apply for Task" class="button-secondary pure-button"/> 
+<input id="btnFilter" type="button" value="Filter Tasks" class="button-secondary pure-button"/> 
+<input id="btnClear" type="button" value="Clear Filter" class="button-secondary pure-button"/> 
+</div>
+
+<div id="appCreate" class="popup">
+Please Wait</br>
+<img src="https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SiteAssets/ajax-loader.gif" alt="Loading..." /></br>
+<p>Creating your task application</br>
+You will automatically be redirected</p>
+</div>
+<div id="showStatus" class="popup" style="width:auto; height:auto; position:fixed; left:20%; top:10%">
+<div id="statTable">
+</div>
+<div style="float:left; width: 220px"><input id="btnClosePopup" type="button" value="NO - Do Not Apply"  class="button-secondary pure-button" /></div>
+<div style="float:right; width: 220px"><input id="btnCreateApp" type="button" value="YES - Apply For This Task"  class="button-secondary pure-button" /></div>
+</div>
+<script type="text/javascript">
+/*
+SWMS v2.1 javascript
+written by EMCS(SS)Christopher A Cone April - OCT 2014
+revised for site migration to https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms
+June - Oct 2015
+v2.1
+*/
+//************************************global variables used by more than one function******************************************
+
+
+var siteMode = 1; // 1=normal, 2=Maintenance This comes from the SiteUtil list, item 1 number field
+var ShipyardID; //used for looking up SY ID from unmet needs
+var ShopID; //used for looking up Shop ID from unmet needs
+var TM; // TM user account used for new task application
+var PM; // program manager user account used for new task application
+var SS; //SY Staff support user account used for new task application
+var UnmetID;
+var baseURL = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SitePages/Start.aspx?View={f0f6dd71-2728-4861-a097-84a302d1c54f}&FilterName=Shop&FilterMultiValue=";
+var filterShops = ""; //used for holding string to apply to Unmet Needs list filter
+var filterBtn = document.getElementById('btnFilter'); 
+var clearBtn = document.getElementById('btnClear');
+var taskReqUrl = "https://navsea.portal.navy.mil/hq/10/10t/navres/surgemain/SWMS/Lists/TaskRequest/Item/editifs.aspx?List=1f7698db%2D204d%2D44ef%2D97b3%2D0a4376b8bb34&ID=";
+var applyBtn = document.getElementById('btnApply'); 
+var createAppBtn = document.getElementById('btnCreateApp'); 
+var statusDiv = document.getElementById('statTable');
+var shopName; //used for creating task application title
+var FYID;
+var IndocID;
+var FYName;
+var shipyardName; //used for creating task application title
+var browser=get_browser_info();
+
+var userLastName = $().SPServices.SPGetCurrentUser({
+	fieldName: "LastName",
+	debug: false
+});
+var browserOld = false;
+//********************************************** end global variables **********************************************************
+//once the page is loaded, check the filter checkboxes based on cookies
+$( window ).load(function() {
+	var checkedBoxes = document.getElementsByName("chkShop");
+	//alert("checkbox array length: " + checkedBoxes.length);
+  $.each($.cookie(), function(i, v) {
+     //for each cookie, check for a checkbox match then check it.
+  for (var j=0; j<checkedBoxes.length; j++) {
+	 if(checkedBoxes[j].id == i && v!=""){
+	 //alert("match " + i);
+	 checkedBoxes[j].checked = true;
+	 } 
+   }
+   //alert(i + " = " + v); 
+   document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    if (evt.ctrlKey && evt.keyCode == 72) {
+        alert("Your browser is: " + browser.name + " version: " + browser.version);
+    }
+};
+});
+//populatescroller(themsg);//send text to scrolling message function
+//define functions to call for the buttons
+filterBtn.onclick = filterBtnClicked;
+clearBtn.onclick = ClearBtnClicked;
+applyBtn.onclick = applyForTask;
+createAppBtn.onclick = createApplication;
+if (browser.name == "MSIE" && (parseInt(browser.version) <= 8)){
+	browserOld = true;
+}
+});
+
+function ClearBtnClicked(){
+//uncheck all checkboxes and remove cookies, then reload the page
+var checkedBoxes = getCheckedBoxes("chkShop");
+var cookies = $.cookie();
+var checkRemove = false;
+for(var cookie in cookies) {
+   $.removeCookie(cookie);
+}
+//reload page without cookies for shop filter
+window.location.href = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SitePages/Start.aspx";
+}
+
+function OnChangeCheckbox (checkbox){
+	if (checkbox.checked == false){
+		//remove associated cookie
+		//alert("it is not checked")
+		try{
+			var isRemoved = $.removeCookie(checkbox.id);
+			//alert("cookie removed: " + isRemoved);
+		}
+		catch(err){
+		}
+	}
+}
+
+function filterBtnClicked(){
+//function for filtering tasks
+	//alert("Clicked filter tasks");
+	try{
+	var checkedBoxes = getCheckedBoxes("chkShop");
+	for (var i=0; i<checkedBoxes.length; i++) {
+     // stick the checked boxes into a filter string
+	 if (i==checkedBoxes.length-1){
+		 filterShops=filterShops + checkedBoxes[i].value + ";";
+		 $.cookie(checkedBoxes[i].id, checkedBoxes[i].value) ;
+	 }
+	 else {
+		 filterShops=filterShops + checkedBoxes[i].value + ";";
+		 $.cookie(checkedBoxes[i].id, checkedBoxes[i].value);
+	 }
+	 //alert(baseURL + filterShops);
+	 window.location.href = baseURL + filterShops;
+     }
+  }
+		
+	catch(err){
+		if (err.number == -2146823281){
+		alert ("No shop selected or no tasks are available for this shop");
+		}
+		else{
+		alert("Error filtering tasks Error: " + err.number + "  " + err.message);
+		}
+	}	
+}
+
+function getCheckedBoxes(chkboxName) {
+  var checkboxes = document.getElementsByName(chkboxName);
+  var checkboxesChecked = [];
+  // loop over them all
+  for (var i=0; i<checkboxes.length; i++) {
+     // And stick the checked ones onto an array...
+     if (checkboxes[i].checked) {
+        checkboxesChecked.push(checkboxes[i]);
+     }
+  }
+  // Return the array if it is non-empty, or null
+  return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+}
+
+//this function opens the hidden div showing the user billets vs applications.
+function applyForTask(){  
+if (siteMode == 1){
+	//Call SP services to get the selected item on the the task list
+	var selectedItems = SP.ListOperation.Selection.getSelectedItems();
+	var numSelectedItems = selectedItems.length;
+	//Warn user they can only apply for a single task at a time then terminate this script
+	if (numSelectedItems > 1){
+		alert("Please select only one task to apply for.");
+	}
+	else{
+		try{
+		UnmetID = selectedItems[0].id;
+		var billets = lookupUnmetByID(UnmetID);
+		var appsByMonth = getUnapprovedTaskReqs(UnmetID);
+		lookupSYbyID(ShipyardID); //set variable for the PM user
+		IndocID = lookupIndoc(FYName, shipyardName);
+		if (typeof(IndocID)=='undefined'){//handles case if there are not any indoc dated loaded
+			IndocID = 19;
+		}
+		//lookupShopByID(ShopID);   //set variable for TM user
+		//build the html for the popup 
+ 		var tempHtml = "<div style='font-size:12px'><b>Status of this Unmet Need - Review before applying</b></div><table class='pure-table pure-table-bordered'>" +
+ 		"<tr><td colspan='4'><b>" + shipyardName + "</b></td><td colspan='9'><b>Shop " + shopName + "</b></td></tr><tr>";
+ 		var index1;
+ 		var monthNames = ["", "OCT", "NOV", "DEC", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP"];
+ 		for(index1=0; index1 <monthNames.length; index1++){
+ 		tempHtml = tempHtml + "<td><b>" + monthNames[index1] + "</b></td>";
+ 		}
+ 		tempHtml = tempHtml + "</tr><tr><td><b>Unapproved Applications<b></td>"
+ 		for(index1=0; index1 <12; index1++){
+		tempHtml = tempHtml + "<td>" + appsByMonth[index1] + "</td>";
+ 		}
+ 		tempHtml = tempHtml + "</tr><tr><td><b>Billets Available</b></td>"
+ 		for(index1=0; index1 <12; index1++){
+ 		tempHtml = tempHtml + "<td>" + billets[index1] + "</td>";
+ 		}
+		tempHtml = tempHtml + "</tr></table>"
+ 		//statusDiv.innerHTML = tempHtml + statusDiv.innerHTML;
+ 		$(statusDiv).prepend(tempHtml);
+ 		
+// 		//alert(appsByMonth + "\n" + billets);
+ 		$('#showStatus').show();
+		}
+		catch(err){
+		//Throw a warning when no task is selected
+		if(err.number == -2146823281){
+		//$('#appCreate').fadeOut();
+		alert("Please select a task");
+		}
+		else{
+		//$('#appCreate').fadeOut();
+		alert("Error creating task request \n" + 
+		"Please capture the screen and email as attachment to: SWMSerrors@inavy.exch.portal.navy.mil \n" 
+		+ err.number + err.message);
+		}
+	}
+	}
+}
+else{
+	alert("SWMS v2 is currently under maintenace. Try your task application again later");
+}
+}
+	//Handle errors that may come up when trying to run the workflow to create an application
+	
+//If Confirm Apply is clicked, create the application
+function createApplication(){
+	try{
+		$('#showStatus').hide();	
+		var taskReqTitle = userLastName + shipyardName + shopName;
+		var tempID;
+		//alert(taskReqTitle);
+		$('#appCreate').show();
+		//itemUrl = itemUrl + selectedItems[0].id + "_.000";
+		//alert(itemUrl)
+		//alert("PM: " + PM + "TM: " + TM + "SY ID: " + ShipyardID + "ShopID: " + ShopID);
+		if (typeof(TM)=='undefined'){
+			//alert("TM is undefined");
+			TM = PM;
+			//alert("PM: " + PM + "TM: " + TM + "SY ID: " + ShipyardID + "ShopID: " + ShopID);
+		}
+		$().SPServices({
+			operation: "UpdateListItems",
+			async: false,
+			listName: "Task-Request",
+			batchCmd: "New",
+			valuepairs: [["TaskID", UnmetID], ["Shipyard_Name", ShipyardID], ["Shop_Name", ShopID], ["Title", taskReqTitle], ["Duty_Type", 0], ["Indoc_Dates", IndocID], ["applicantBrowser", browser.name + " " + browser.version],
+			["Status", "7"]],
+			completefunc: function(xData, Status) {
+			//alert("create new task-request response: " + xData.responseText);
+			$(xData.responseXML).SPFilterNode("z:row").each(function(){
+						tempID = $(this).attr("ows_ID");
+						//alert(shipyardName + "  " + shopName);
+					});
+				$.cookie("NewApplication", tempID, { path: '/' });
+				//alert($.cookie("NewApplication"));
+				$('#appCreate').delay(2000).fadeOut();	
+				window.location.href = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/Lists/TaskRequest/EditForm.aspx?ID=" + tempID + "&Source=https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SitePages/Start.aspx";
+		}
+		});
+		}
+		catch(error){
+		$('#appCreate').fadeOut();
+		alert("Unable to create application " + error);
+		}
+			
+}
+//query the list for the item that was selected and get the ID of the new application item that was 
+//created (LastReqID)
+function lookupUnmetByID(itemID){
+	//Array of billets used for confirmation popup
+	var billetNum = [0,0,0,0,0,0,0,0,0,0,0,0];
+	var query1 = "<Query><Where><Eq><FieldRef Name='ID'/><Value Type='Number'>" + itemID + "</Value></Eq></Where></Query>";
+	try{
+	$().SPServices({
+            operation: "GetListItems",
+            listName: "Unmet_Needs",
+            async: false,
+            CAMLQuery: query1,
+            completefunc: function (xData, Status) {
+				//alert(xData.responseText);//use this alert to see the list item returned
+				$(xData.responseXML).SPFilterNode("z:row").each(function(){
+					var tempSY = $(this).attr("ows_Shipyard");
+					var tempSYarr = tempSY.split(";");
+                    ShipyardID = parseFloat(tempSYarr[0]);
+					shipyardName = tempSYarr[1];
+					shipyardName = shipyardName.replace("#", "");
+					var tempShop = $(this).attr("ows_Shop");
+					var tempShoparr = tempShop.split(";");
+                    ShopID = tempShoparr[0];
+					shopName = tempShoparr[1];
+					shopName = shopName.replace("#", "");
+					var tempFY = $(this).attr("ows_FY");
+					var tempFYarr = tempFY.split(";");
+                    FYID = parseFloat(tempFYarr[0]);
+					FYName = tempFYarr[1];
+					FYName = FYName.replace("#", "");
+					
+					//Populate the billets by month
+					billetNum[0] = parseFloat($(this).attr("ows_OCT"));
+					billetNum[1] = parseFloat($(this).attr("ows_NOV"));
+					billetNum[2] = parseFloat($(this).attr("ows_DEC"));
+					billetNum[3] = parseFloat($(this).attr("ows_JAN"));
+					billetNum[4] = parseFloat($(this).attr("ows_FEB"));
+					billetNum[5] = parseFloat($(this).attr("ows_MAR"));
+					billetNum[6] = parseFloat($(this).attr("ows_APR"));
+					billetNum[7] = parseFloat($(this).attr("ows_MAY"));
+					billetNum[8] = parseFloat($(this).attr("ows_JUN"));
+					billetNum[9] = parseFloat($(this).attr("ows_JUL"));
+					billetNum[10] = parseFloat($(this).attr("ows_AUG"));
+					billetNum[11] = parseFloat($(this).attr("ows_SEP"));
+					
+					//alert(shipyardName + "  " + shopName);
+					//applicationId = parseInt(AppId);
+					//alert(applicationId);
+                });
+            }
+        });
+	return billetNum;
+  }
+  catch(err2){
+  alert(err2.message);
+  }
+}
+function lookupSYbyID(itemID){
+//Lookup PM username from Z_Shipyards List
+	try{
+	$().SPServices({
+            operation: "GetListItems",
+            listName: "Z_SM_Shipyard",
+            async: false,
+            CAMLQuery: "<Query><Where><Eq><FieldRef Name='ID'/><Value Type='Number'>" + itemID + "</Value></Eq></Where></Query>",
+			CAMLViewFields: "<ViewFields><FieldRef Name='PM' /><FieldRef Name='Staff' /></ViewFields>",
+            completefunc: function (xData, Status) {
+				//alert(xData.responseText);//use this alert to see the list item returned
+				$(xData.responseXML).SPFilterNode("z:row").each(function(){
+					var tempPM = String($(this).attr("ows_PM"));
+					var tempPMarr = tempPM.split(";");
+                    PM = tempPMarr[0];
+					var tempSS = String($(this).attr("ows_Staff"));
+					var tempSSarr = tempSS.split(";");
+                    SS = tempSSarr[0];
+					//alert("Shipyard PM is: " + PM);
+					                });
+            }
+        });
+  }
+  catch(err2){
+  alert(err2.message);
+  }
+}
+function lookupIndoc(FY, SY){
+//Lookup PM username from Z_Shipyards List
+	var tempIndocID;
+	try{
+	var query1 = "<Query>" +
+					"<Where>" +						
+							"<And>" +
+							"<Eq>" +
+								"<FieldRef Name='FY' /><Value Type='Lookup'>" + FY + "</Value>" +
+							"</Eq>" +
+							"<Eq>" +
+								"<FieldRef Name='Shipyard' /><Value Type='Lookup'>" + SY + "</Value>" +
+							"</Eq>" +
+						"</And>" +					
+					"</Where>" +
+				"</Query>";
+	//alert(query1);
+	$().SPServices({
+            operation: "GetListItems",
+            listName: "Indoc_Dates",
+            async: false,
+            CAMLQuery: query1,
+			CAMLViewFields: "<ViewFields><FieldRef Name='ID' /><FieldRef Name='FY' /></ViewFields>",
+            completefunc: function (xData, Status) {
+				//alert("lookupIndoc response: " + xData.responseText);//use this alert to see the list item returned
+				$(xData.responseXML).SPFilterNode("z:row").each(function(){
+					tempIndocID = String($(this).attr("ows_ID"));
+					//alert(tempIndocID);
+					                });
+            }
+        });
+ return tempIndocID;
+ }
+  catch(err2){
+  alert(err2.message);
+  }
+}
+// function lookupShopByID(itemID){            //not sure if this is needed!!!!!!!!!!!!!!!!!!
+// //Lookup TM username from Z_Shipyards List
+// 	try{
+// 	$().SPServices({
+//             operation: "GetListItems",
+//             listName: "Z_Task_Managers",
+//             async: false,
+//             CAMLQuery: "<Query><Where><Eq><FieldRef Name='ID'/><Value Type='Number'>" + itemID + "</Value></Eq></Where></Query>",
+// 			CAMLViewFields: "<ViewFields><FieldRef Name='PNSY_TM_userName' /></ViewFields>",
+//             completefunc: function (xData, Status) {
+// 				//alert(xData.responseText);//use this alert to see the list item returned
+// 				$(xData.responseXML).SPFilterNode("z:row").each(function(){
+// 					var tempTM = String($(this).attr("ows_PNSY_TM_userName"));
+// 					var tempTMarr = tempTM.split(";");
+//                     TM = tempTMarr[0];
+// 					//alert(TM);
+// 					                });
+//             }
+//         });
+//   }
+//   catch(err2){
+//   alert(err2.message);
+//   }
+// }
+
+//function for checking unapproved task-request count for the selected unmet need
+function getUnapprovedTaskReqs(appID){
+var unmetNeedsMonths = [0,0,0,0,0,0,0,0,0,0,0,0];
+try{
+var query1 = "<Query>" +
+					"<Where>" +
+						"<And>" +
+							"<IsNotNull>" +
+									"<FieldRef Name='Applicant' />" +
+							"</IsNotNull>" +						
+							"<And>" +
+								"<Eq>" +
+									"<FieldRef Name='TaskID' /><Value Type='Number'>" + appID + "</Value>" +
+								"</Eq>" +
+								"<In>" +
+									"<FieldRef Name='Status' LookupId='TRUE' />" +
+									"<Values>" +
+										"<Value Type='Lookup'>2</Value>" + //status is TM Approved
+										"<Value Type='Lookup'>1</Value>" + //status is Unit Approved
+										"<Value Type='Lookup'>6</Value>" + //status is Rejected
+										"<Value Type='Lookup'>7</Value>" + //status is Initial
+									"</Values>" +
+								"</In>" +
+							"</And>" +
+						"</And>" +	
+					"</Where>" +
+				"</Query>";				
+//alert(query1);				
+$().SPServices({
+				operation: "GetListItems",
+				listName: "Task-Request",
+				async: false,
+				CAMLViewFields: "<ViewFields><FieldRef Name='ID' /><FieldRef Name='Start_Month' /><FieldRef Name='TaskID' /></ViewFields>",
+				CAMLQuery: query1,
+				CAMLRowLimit: 0,
+				completefunc: function (xData, Status) {
+					//alert(Status);
+					//alert(xData.responseText);
+					//alert(xData.responseXML);	
+					$(xData.responseXML).SPFilterNode("z:row").each(function(){
+						//load the applications count by start month
+						var startMonth = $(this).attr("ows_Start_Month");
+						var startMonthNum = startMonth.split('#');
+						startMonth = startMonthNum[1];
+						var start = parseFloat(startMonth);
+						if(start <= 9){
+							unmetNeedsMonths[start+2] = unmetNeedsMonths[start+2]+1;
+						}
+						else{
+							unmetNeedsMonths[start-10] = unmetNeedsMonths[start-10]+1;
+						}
+						
+					});
+					//var itemCount = $(xData.responseXML).SPFilterNode("rs:data").attr("ItemCount");
+					//alert("There are: " + itemCount + " unapproved task requests for this unmet need \n" + unmetNeedsMonths);
+				}
+			});
+return unmetNeedsMonths;
+}
+catch(err2){
+//alert(err2);
+}
+}
+var closePopupBtn = document.getElementById('btnClosePopup');      
+closePopupBtn.onclick = hideForm;//function call when button is pressed
+function hideForm(){
+ $('#showStatus').hide();
+$(statusDiv).html("");
+ }
+ function get_browser_info(){
+    var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || []; 
+    if(/trident/i.test(M[1])){
+        tem=/\brv[ :]+(\d+)/g.exec(ua) || []; 
+        return {name:'IE',version:(tem[1]||'')};
+        }   
+    if(M[1]==='Chrome'){
+        tem=ua.match(/\bOPR\/(\d+)/)
+        if(tem!=null)   {return {name:'Opera', version:tem[1]};}
+        }   
+    M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+    if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+    return {
+      name: M[0],
+      version: M[1]
+    };
+ }
+</script>
+
+<div name="ShopCheck">
+<div name="SMShops" class="ShopCheckboxes">
+<fieldset class="swmsFieldset">
+<legend>SHOP</legend style="margin-top:3px">
+<label class="shopCheckboxes"><input name="chkShop" tabindex="1" id="6" type="checkbox" value="06" onclick="OnChangeCheckbox (this)"/>06 - Tool Room</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="2" id="11" type="checkbox" value="11" onclick="OnChangeCheckbox (this)"/>11 - Ship Fitters</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="3" id="17" type="checkbox" value="17" onclick="OnChangeCheckbox (this)"/>17 - Sheet Metal</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="4" id="26" type="checkbox" value="26" onclick="OnChangeCheckbox (this)"/>26 - Welders</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="5" id="31" type="checkbox" value="31"  onclick="OnChangeCheckbox (this)"/>31 - Inside Machinery</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="6" id="38" type="checkbox" value="38" onclick="OnChangeCheckbox (this)"/>38 - Outside Machinery</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="7" id="38OR" type="checkbox" value="38OR" onclick="OnChangeCheckbox (this)"/>38OR - Machinist/Ordinance</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="8" id="38D" type="checkbox" value="38D" onclick="OnChangeCheckbox (this)"/>38D - Machinist/Dive Shop</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="9" id="41" type="checkbox" value="41" onclick="OnChangeCheckbox (this)"/>41 - Boiler Techs</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="10" id="51" type="checkbox" value="51" onclick="OnChangeCheckbox (this)"/>51 - Electrical</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="11" id="52" type="checkbox" value="52" onclick="OnChangeCheckbox (this)"/>52 - Calibration Lab</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="12" id="56" type="checkbox" value="56" onclick="OnChangeCheckbox (this)"/>56 - Pipefitters</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="13" id="57" type="checkbox" value="57" onclick="OnChangeCheckbox (this)" />57 - Insulators</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="14" id="64" type="checkbox" value="64-Shipwrights" onclick="OnChangeCheckbox (this)"/>64 - Shipwrights</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="15" id="66" type="checkbox" value="66" onclick="OnChangeCheckbox (this)"/>66 - Machinery Repair</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="16" id="67" type="checkbox" value="67" onclick="OnChangeCheckbox (this)"/>67 - Electronics</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="17" id="71" type="checkbox" value="71" onclick="OnChangeCheckbox (this)"/>71 - Painters</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="18" id="72" type="checkbox" value="72" onclick="OnChangeCheckbox (this)"/>72 - Riggers/Wt. Handlers</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="19" id="98" type="checkbox" value="98" onclick="OnChangeCheckbox (this)"/>98 - Crane Maintenance</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="20" id="99" type="checkbox" value="99" onclick="OnChangeCheckbox (this)"/>99 - Temp Services</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="21" id="99E" type="checkbox" value="99E" onclick="OnChangeCheckbox (this)"/>99E - Temp Electrical</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="22" id="99P" type="checkbox" value="99P" onclick="OnChangeCheckbox (this)"/>99P - Temp Piping</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="31" id="99D" type="checkbox" value="99D" onclick="OnChangeCheckbox (this)" />99D - Drydock Temp Svs</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="30" id="STS" type="checkbox" value="STS" onclick="OnChangeCheckbox (this)"/>Technical Support </label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="32" id="VTU" type="checkbox" value="VTU" onclick="OnChangeCheckbox (this)" />ADT</label><br/>
+</fieldset></div>
+<div name="SMOverhead" class="ShopCheckboxes" style="margin-top:3px">
+<fieldset class="swmsFieldset"><legend>SURGEMAIN</legend>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="23" id="OH-ENL" type="checkbox" value="OH-ENL" onclick="OnChangeCheckbox (this)"/>Enlisted Office Support</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="24" id="OH-OSL" type="checkbox" value="OH-OSL" onclick="OnChangeCheckbox (this)"/>On-site Leader (CPO Only)</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="25" id="OH-OFF" type="checkbox" value="OH-OFF" onclick="OnChangeCheckbox (this)"/>Officer Support to SM Office</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="26" id="ODS" type="checkbox" value="ODS" onclick="OnChangeCheckbox (this)"/>Other Direct Support</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="27" id="OH-O" type="checkbox" value="OH-O" onclick="OnChangeCheckbox (this)"/>Other Overhead</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="28" id="SP-D" type="checkbox" value="SP-D" onclick="OnChangeCheckbox (this)"/>Special Projects</label><br/>
+</fieldset></div>
+<div name="STC" class="ShopCheckboxes" style="margin-top:3px">
+<fieldset class="swmsFieldset"><legend>STC</legend>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="29" id="STC-E" type="checkbox" value="MARMC-E" onclick="OnChangeCheckbox (this)"/>Electrical (Shops 51, 67, 99E)</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="30" id="STC-M" type="checkbox" value="MARMC-M" onclick="OnChangeCheckbox (this)"/>Mech. (Shops 31, 38, 99P)</label><br/>
+<label class="shopCheckboxes"><input name="chkShop" tabindex="30" id="STC-S" type="checkbox" value="MARMC-S" onclick="OnChangeCheckbox (this)"/>Structural (Shops 11, 17, 26)</label><br/>
+<label class="shopCheckboxes" style="margin-bottom: 3px"><input name="chkShop" tabindex="31" id="MARMC-OSL" type="checkbox" value="MARMC-OSL" onclick="OnChangeCheckbox (this)"/>On-site Leader</label><br/>
+</fieldset></div>
+</div>
+
+ </body>
+ 
+ </HTML>
