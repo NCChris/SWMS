@@ -1,0 +1,1370 @@
+<head>
+<title>SWMS Task Application</title>
+<meta name="author" content="Chris Cone">
+<script src="https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SiteAssets/jquery-1.11.3.min.js" type="text/javascript"></script>
+<script src="https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SiteAssets/jquery.SPServices.js" type="text/javascript"></script>
+<script src="https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SiteAssets/jquery-ui/jquery-ui.js" type="text/javascript"></script>
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:_dlc_DocId msdt:dt="string">U7DTEYND4AN6-375-71</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">4f6413df-48ce-4c3e-9cff-3b3f71e035fd</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/_layouts/DocIdRedir.aspx?ID=U7DTEYND4AN6-375-71, U7DTEYND4AN6-375-71</mso:_dlc_DocIdUrl>
+<mso:ReleaseVersion msdt:dt="string"></mso:ReleaseVersion>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<h1>SWMS Task Request</h1>
+<div id="indocDates" >
+</div>
+<div class="SWMStable.tablewrapper">
+<div class="SWMStable" >
+	<div class="SWMStableRow">
+		<div class="SWMStableCell">
+			<div class="SWMStable" >
+				<div class="SWMStableRow">
+					<div class="SWMStableCell">
+						<span class="taskForm" >Shipyard: </span><div id="SYName" class="taskForm highlight" style="display:inline"></div>
+					</div>
+					<div class="SWMStableCell">
+						<span class="taskForm" >Shop: </span><div id="ShopName" class="taskForm highlight" style="display:inline"></div>
+					</div>
+				</div>
+				<div class="SWMStableRow">
+					<div class="SWMStableCell">
+						<span class="taskForm">Task Status:</span><div id="appStatus2" class="taskForm highlight" style="display:inline"></div>
+					</div>
+					<div class="SWMStableCell">
+						
+					</div>
+				</div>
+				<div class="SWMStableRow">
+					<div class="SWMStableCell">
+						<p class="taskForm"><em class="req">*</em>Applicant: </p>
+						<span class="taskApp" id="applicant" data-displayName="Applicant"></span>
+					</div>
+					<div class="SWMStableCell">
+						<p class="taskForm"><em class="req">*</em>Unit Approver</p>
+						<span class="taskApp" id="unit_approver" data-displayName="Unit_Approver"></span>
+						<p class="taskFormSmall">Select the approver for your unit</p>
+					</div>
+				</div>
+				<div class="SWMStableRow">
+					<div class="SWMStableCell">
+						<p class="taskForm"><em class="req">*</em>Duty Type: </p>
+						<span class="taskApp" id="duty_type" data-displayName="Duty_Type"></span>
+					</div>
+					<div class="SWMStableCell">
+						<p class="taskForm">Task Manager</p>
+						<input type="text" id="TM" style="margin-left:5px; margin-right:5px" />
+					</div>
+				</div>
+				<div class="SWMStableRow">
+					<div class="SWMStableCell">
+						<p class="taskForm"><em class="req">*</em>Start Date: </p>
+						<span class="taskApp" id="start_date" style="margin-left:0px;" data-displayName="Start_Date"></span>
+					</div>
+					<div class="SWMStableCell">
+						<p class="taskForm"><em class="req">*</em>End Date: </p>
+						<span class="taskApp" id="end_date" data-displayName="End_Date" ></span>
+					</div>
+				</div>
+				<div class="SWMStableRow">
+					<div class="SWMStableCell">
+						<p class="taskForm" >Attachments (up to 3): </p>
+					</div>
+					<div class="SWMStableCell">
+						<div id="Attachments" class="taskForm highlight" style="font-size:small"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="SWMStableCell approver">
+			<div class="SWMStable approver" >
+				<div class="SWMStableRow">
+					<div class="SWMStableCell approver">
+						<p class="taskForm" style='text-decoration:underline'>Approver Functions</p>
+					</div>
+				</div>
+				<div class="SWMStableRow">
+					<div class="SWMStableCell approver">
+						<span class="taskForm">Task Status:</span><div id="appStatus" class="taskForm highlight" style="display:inline"></div>
+					</div>
+				</div>
+				<div class="SWMStableRow">
+					<div class="SWMStableCell approver">
+						<p class="taskForm">Shop: </p>
+						<span class="taskApp" id="shop_name_approver" data-displayName="Shop_Name"></span>
+					</div>
+				</div>
+				<div class="SWMStableRow">
+					<div class="SWMStableCell approver" >
+						<p class="taskForm">Approver Notes: </p>
+						<p class="taskFormSmall">These notes will be included in notifications to the applicant</p>
+						<span class="taskApp" id="approver_notes" data-displayName="Approver_Notes"></span>
+						<p class="taskForm">Reject/Cancel Message Text to Sailor:</p>
+						<p class="taskFormSmall">(if applicable)</p>
+						<span class="taskApp" id="reject_message" data-displayName="reject_message"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="SWMStableRow">
+		<div class="SWMStableCell" >
+			<p class="taskForm">Applicant Notes: </p>
+			<span class="taskApp" data-displayName="Applicant_Notes" id="applicant_notes" style="margin-bottom:5px; width 100%"></span><br></br>
+			<input type="button" class="button-form" title="Add a record to member data" value="Add Member Data" style="width:220px" onclick="javascript:editMemberData();" ></input> 
+			<input type="button" class="button-form" title="Attach a file to this application" value="Attach My Resume" style="width:220px; float:right" onclick="javascript:openpageindialog()" ></input><br></br> 
+			<input name="Submit1" type="button" style="width:220px" class="button-form" value="Submit" id="Submit1" onclick="javascript: saveApp();" ></input> 
+			<input name="Button1" type="button" value="Exit" class="button-form" style="width:220px; float:right" onclick="javascript:window.location.href = 'https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SitePages/Start.aspx';"></input>
+		</div>
+		<div class="SWMStableCell approver">
+			<p class="taskFormSmall highlight">Note: You must click save after adding notes or a<br>
+			reject message prior to clicking Approve or Reject</p>
+			<input name="Submit2" type="submit" style="width:130px; margin-right:0px" class="button-form" value="Save" id="Submit2" onclick="javascript: saveApproverData();" ></input> 
+			<input id="btnResend" type="button" value="Resend BCN" class="button-form" style="width:130px; float:right" onclick="javascript: resendBCN();"></input> <br></br>
+			<input id="btnCancel" type="button" value="Cancel BCN" class="button-form" style="width:130px; margin-right:0px" onclick="javascript: cancelBCN();"></input> 
+			<input id="btnUnmet" type="button" title="View/Change the unmet needs for this task" value="Edit Unmet Need" class="button-form" style="width:130px; font-size:11pt; float:right" onclick="javascript: editUnmet();"></input><br></br>
+			<input id="btnApprove" type="button" title="run the approval script for my user role" value="Approve" class="approve ui-corner-all button-form" style="width:130px; margin-right:0px" onclick="javascript: approveTask(false);"></input> 
+			<input id="btnReject" type="button" title="run the reject script" value="Reject" class="reject ui-corner-all button-form" style="width:130px; float:right" onclick="javascript: rejectTask();"></input> 
+			<p class="taskFormSmall highlight"><a href="javascript: showComments();" style="color:#FFB204;font-weight: bold;font-size:10pt;">Click to view/add comments</a></p>
+		</div>
+	</div>
+</div>
+</div>
+<div id="comments" class="popup" style="width:600px; height:600px; position:fixed; left:40%; top:5%">
+	<div class="SWMStable" >
+		<div class="SWMStableRow">
+			<div class="SWMStableCell">
+			<p class="taskForm">Approver Comments: </p>
+			</div>
+		</div>
+		<div class="SWMStableRow">
+			<div class="SWMStableCell">
+			<span class="taskApp" id="approver_comments" data-displayName="Approver_Comments"></span>
+			<input name="Submit2" type="submit" style="width:300px" class="button-form" value="Exit" id="Submit2" onclick="javascript: hideComments();" ></input> 
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="waitPopup" class="popup">
+Please Wait<br></br>
+<img src="https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SiteAssets/ajax-loader.gif" alt="Loading..." /></br>
+<div id="waitMsg"></div>
+</div>
+<div id="mode" class="popup" style="width:512px; height:75px; position:fixed; left:40%; top:5%">
+Choose form mode for testing: </br>
+<label class="popupCheck"><input name="chkSY" id="mode1" type="checkbox" value="NNSY" onclick="javascript: OnChangeCheckbox (this);"/>Sailor</label>
+<label class="popupCheck"><input name="chkSY" id="mode2" type="checkbox" value="PHNSY" onclick="javascript: OnChangeCheckbox (this);"/>UA</label>
+<label class="popupCheck"><input name="chkSY" id="mode3" type="checkbox" value="PNSY" onclick="javascript: OnChangeCheckbox (this);"/>TM</label>
+<label class="popupCheck"><input name="chkSY" id="mode4" type="checkbox" value="PSNS" onclick="javascript: OnChangeCheckbox (this);"/>PM</label>
+<input id="btnApprove" type="button" title="close" value="close" class="approve ui-corner-all" style="width:130px; margin-right:0px" onclick="javascript: continueLoad();"></input> 
+</div>
+<script type="text/javascript">
+	var path = window.location.href.split('?')[1];//url
+	var baseURL = window.location.href.split('&')[0];
+	var taskReqID;
+	var IndocID;//placeholder variable set later
+	var startDate;//placeholder variable set later and used for validation
+	var endDate;
+	var taskStartMonth; //used to increment/decrement unmet needs
+	var ShipyardID;
+	var ShopID;
+	var shipyardName;
+	var shopName;
+	var billets; //array populated from unment needs
+	var TMapproved; //boolean
+	var UnitApproved; //boolean
+	var PM; //PM user ID
+	var SS; //SS user ID
+	var TM; //TM user ID
+	var UA; //Unit approver user ID
+	var TMalt; //alternate TM
+	var taskID; //id of the unmet need this 
+	var TM_LookupID;
+	var TMname; //task manager name. gets extracted from user profile
+	var formMode; //(Sailor - 1, UA - 2, TM - 3 or PM - 4)
+	var userRoleTxt; //for displaying the user's role
+	var appStatus; //1-unit approved, 2-TM approved, 3-BCN issue, 4-cancelled, 5-delete, 6-rejected, 7-initial
+	var appStatusText;
+	var applicantSelect;
+	var browser=get_browser_info();
+	var attachPath = ["", "", ""];
+	var attachSelector = ["", "", ""];
+	var forceFormMode = 0; //0 - default, 1 - Sailor, 2 - UA, 3 - TM, 4 - PM
+/* $("#mode").show();
+function OnChangeCheckbox (checkbox){
+		if (checkbox.checked == true){
+			var chkID = checkbox.id;
+			if(chkID == "mode1"){
+			userRoleTxt = "Sailor";
+			forceFormMode = 1;}
+			else if(chkID == "mode2"){
+			forceFormMode = 2;
+			userRoleTxt = "Unit Approver";}
+			else if(chkID == "mode3"){
+			userRoleTxt = "TM";
+			forceFormMode = 3;}
+			else if(chkID == "mode4"){
+			userRoleTxt = "PM";
+			forceFormMode = 4;}
+			else{
+			forceFormMode = 0;}
+		}
+	} */
+$(document).ready(function() {	
+	if (!Array.prototype.indexOf) { //makes this script compatible for <IE9. Needed for PM approve and Cancel (indexOf)
+		Array.prototype.indexOf = function(obj, start) {
+			 for (var i = (start || 0), j = this.length; i < j; i++) {
+				 if (this[i] === obj) { return i; }
+			 }
+			 return -1;
+		}
+	}
+	continueLoad();
+});
+function continueLoad(){	
+		$('#mode').hide();
+		var taskReqIDstr = path.split('=')[1];
+		taskReqIDstr = taskReqIDstr.split('&')[0];
+		taskReqID = parseFloat(taskReqIDstr);//ID of this task from the url
+		getTaskID(taskReqID);
+		switch (appStatus){
+			case 1:
+			appStatusText = "Unit Approved";
+			break;
+			case 2:
+			appStatusText = "Task Manager Approved";
+			break;
+			case 3:
+			appStatusText = "BCN Issued";
+			break;
+			case 4:
+			appStatusText = "Cancelled";
+			break;
+			case 5:
+			appStatusText = "Delete";
+			break;
+			case 6:
+			appStatusText = "Rejected";
+			break;
+			case 7:
+			appStatusText = "Initial";
+			break;
+			default:
+			appStatusText = "Initial";
+			break;
+		}
+		billets = lookupUnmetByID(taskID);
+		//alert("task id: " + taskReqID);
+		//alert(shipyardName + "  " + shopName);
+		lookupTM(shipyardName, shopName);
+		var formMode = determineFormMode();
+		//alert("Form mode is: " + formMode);
+		//loop through all the spans in the custom layout        
+        try{	
+		$("table.ms-formtable td").find("select[title='Applicant']").appendTo($("#applicant"));
+		$("table.ms-formtable td").find("select[title='Unit_Approver']").appendTo($("#unit_approver"));
+		$("table.ms-formtable td").find("select[title='Duty_Type']").appendTo($("#duty_type"));
+		$("table.ms-formtable td").find("select[title='Shop_Name']").appendTo($("#shop_name_approver"));
+		$("table.ms-formtable td").find("input[title='Start_Date']").appendTo($("#start_date"));
+		$("table.ms-formtable td").find("input[title='End_Date']").appendTo($("#end_date"));
+		$("table.ms-formtable td").find("textarea[title='Applicant_Notes']").appendTo($("#applicant_notes"));
+		$("table.ms-formtable td").find("textarea[title='Approver_Notes']").appendTo($("#approver_notes"));
+		$("table.ms-formtable td").find("textarea[title='reject_message']").appendTo($("#reject_message"));
+		$("table.ms-formtable td").find("textarea[title='Approver_Comments']").appendTo($("#approver_comments"));
+		}
+		catch(err){
+		alert("Error loading the form and appending the SharePoint form elements \n" +
+		"Error details: " + err.message);
+		}
+		$(function() {
+		$( "input[title='Start_Date']" ).datepicker({dateFormat: "mm/dd/yy"});
+		});
+		$(function() {
+		$( "input[title='End_Date']" ).datepicker({dateFormat: "mm/dd/yy"});
+		});
+		//use SP services to find any attachments to this list item
+		 var attachments = ["", "", ""];
+		getAttachmentFiles('Task-Request',taskReqID,attachmentText);
+		function attachmentText(urls){
+			try{
+				for(var i =0; i< urls.length; i++){
+					attachPath[i] = urls[i];
+					var fileName = urls[i].split(taskReqID.toString())[1];
+					fileName = fileName.replace('/', ' ');
+					if (fileName.length >= 25){
+						fileName = fileName.slice(0,25) + "...";
+					}
+					attachSelector[i] = "#btnDelAtt" + i;
+					attachments[i] = "<p><input type='button' value='X' class='button-delete' id='btnDelAtt" + i + "'></input><a href='" + urls[i] + 
+					"' id='delAtt" + i + "' style='color:#FFB204;font-weight: bold;font-size:small;'>" + fileName + "</a></p>"; 
+				}    
+			}
+			catch(err){
+			attachments[0] = "No attachment, or error getting attachment";
+			}
+		}
+		//build buttons and links for attachments
+		var attachmentsHTML = "";
+		for(var i =0; i< attachments.length; i++){
+			attachmentsHTML = attachmentsHTML + attachments[i];
+		}
+		//add the attachment links and delete buttons
+		$("#Attachments").html(attachmentsHTML);
+		//bind the delete buttons click() events
+		for(var i=0; i<attachPath.length; i++){
+		//alert("selector: " + attachSelector[i] + " path: " + attachPath[i]);
+		$(attachSelector[i]).bind("click", {path: attachPath[i], selectID: attachSelector[i]}, function(event){ 
+		delAtt(event.data.path, event.data.selectID);
+		}); 
+		}
+		//style select fields
+		$("input[id$=TM]").css({"width":"95%", "margin-right":"20px"});
+		$("input[id$=Lookup-button]").css({"height":"28px", "width":"220px"});
+		$("input[id$=TM]").addClass("ui-widget ui-corner-all");
+		$("input[id$=TM]").attr("disabled",true);
+		$("input[id$=TM]").val(TMname);
+		$("input[id$=SaveItem]").css("display","none");
+		$("input[id$=GoBack]").css("display","none");
+		$("select[id$=Lookup]").addClass("ui-widget ui-corner-all");
+		$("textarea[id$=TextField]").css({"height":"50px", "width":"300px"});
+		$("textarea[id$=TextField]").addClass("ui-corner-all");
+		$("input[id$=DateTimeFieldDate]").css({"height":"24px", "width":"120px", "margin-left":"5px"});
+		$("input[id$=DateTimeFieldDate]").addClass("ui-widget ui-corner-all");
+		$("#SYName").text(shipyardName);
+		$("#appStatus").text(appStatusText);
+		$("#appStatus2").text(appStatusText);
+		$("#ShopName").text(shopName);
+		
+		$("select[title='Shop_Name']").css({"width":"300px"});
+		$("textarea[title='Applicant_Notes']").css({"width":"95%"});
+		$("textarea[title='Approver_Comments']").css({"width":"100%", "height":"100%"});
+		if(appStatus != 3)//BCN is not issued
+		{ 
+		$("input[id$=btnResend]").attr("disabled",true);
+		$("input[id$=btnCancel]").attr("disabled",true);
+		}
+		if(appStatus != 7)//task is not initial status, ie unit or TM approved
+		{
+		$("select[title='Applicant']").attr("disabled",true);
+		$("select[title='Unit_Approver']").attr("disabled",true);
+		}
+		if((appStatus > 2)&&(appStatus < 7))//if the BCN is issued, task is cancelled, or is to be deleted
+		{
+		//disable the reject button and reject comments
+		$("#btnReject").attr("disabled",true);
+		$("#btnApprove").attr("disabled",true);
+		$("select[title='Shop_Name']").attr("disabled",true);
+		$("select[title='Shipyard_Name']").attr("disabled",true);
+		$("select[title='Start_Date']").attr("disabled",true);
+		$("select[title='End_Date']").attr("disabled",true);
+		$("input[id='Submit1']").attr("disabled",true);
+		}
+		if (formMode != 4){
+		$("select[title='Shop_Name']").attr("disabled",true);
+		$("input[id$=btnUnmet]").attr("disabled",true);
+		}
+		if (formMode >= 2){
+		$( ".approver" ).attr("style", "display: block;");
+		}
+		document.onkeydown = function(evt) {
+			evt = evt || window.event;
+			if (evt.ctrlKey && evt.keyCode == 72) {
+				//go to the test form
+				window.location.href = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/Lists/TaskRequest/test.aspx?ID=" + taskReqID;
+			}
+			else if (evt.ctrlKey && evt.keyCode == 118) {
+				//show logged in user info, role, and form mode
+				var currentUser = $().SPServices.SPGetCurrentUser({
+										fieldName: "ID",
+										debug: false
+									});
+				alert("Logged in user ID is: " + currentUser +
+				"\nForm Mode is: " + formMode + ": " + userRoleTxt + "\nUnit Approver ID for this task: " + UA + 
+				"\nTask Manager is " + TM + "\nProgram Manager ID is " + PM + "\nSY Staff ID is " + SS);
+			}
+		};
+		//*************************************************************************************************************
+		//*************************************************************************************************************
+		//Trying to pull selected member data record
+		function getApplicant(applicant){
+			alert(applicant.val());
+		}
+		//**************************************************************************************************************
+		//**************************************************************************************************************
+		//remove the useless version text at the top
+		var versionField = document.getElementById('onetidinfoblockV');
+		versionField.innerHTML = "";
+		var modifiedField = document.getElementById('onetidinfoblock2');
+		modifiedField.innerHTML = "Current user role: " + userRoleTxt; 
+		var appsByMonth = getUnapprovedTaskReqs(taskID);
+		var indoc = document.getElementById('indocDates');
+		var indocDates = getIndocDates(IndocID);
+		var tempHtml = "<div style='font-size:12px'><b>Task Information</b></div><table class='taskinfo'><thead><tr>";
+ 		var index1;
+ 		var monthNames = ["", "OCT", "NOV", "DEC", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP"];
+ 		for(index1=0; index1 <monthNames.length; index1++){
+ 		tempHtml = tempHtml + "<th>" + monthNames[index1] + "</th></td>";
+ 		}
+ 		tempHtml = tempHtml + "</tr></thead><tbody><tr><td class='taskForm'>Unapproved Applications</td>";
+ 		for(index1=0; index1 <12; index1++){
+		tempHtml = tempHtml + "<td class='taskForm'>" + appsByMonth[index1] + "</td>";
+ 		}
+ 		tempHtml = tempHtml + "</tr><th>Billets Available</th>";
+ 		for(index1=0; index1 <12; index1++){
+ 		tempHtml = tempHtml + "<td class='taskForm'>" + billets[index1] + "</td>";
+ 		}
+		tempHtml = tempHtml + "</tr><tr><th>Indoc Dates</th>"
+ 		for(index1=0; index1 <12; index1++){
+ 		tempHtml = tempHtml + "<td class='taskForm'>" + indocDates[index1] + "</td>";
+ 		}
+		tempHtml = tempHtml + "</tr><tr><td></td><td colspan='12'>*Unapproved Applications number includes this application</td></tr></tbody></table>"
+ 		
+ 		$(indoc).prepend(tempHtml);
+		if (formMode >= 2){
+		$( ".approver" ).css( "display", "block" );
+		}
+}
+function editMemberData(itemID){
+var url = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/Lists/Member_Data_Basics/NewForm.aspx?Source=" + baseURL;
+window.location.href = url
+	}
+
+//function for validating form
+function PreSave(){
+	var noErrors = true;
+	var Applicant = $("select[title='Applicant'] option:selected").text();
+	var Approver = $("select[title='Unit_Approver'] option:selected").text();
+    var start =  $("input[title='Start_Date'] ").val();
+	var end = $("input[title='End_Date'] ").val();
+	var duty = $("select[title='Duty_Type'] option:selected").text();
+	var alertFlag = [false, false, false, false, false];
+	var alertText = ["", "", "", "", "", ""];
+	if (Applicant == "(None)"){
+	alertFlag[0] = true;
+	alertText[0] = "Please select an applicant name. \n";
+	}
+	if (Approver == "(None)"){
+	alertFlag[1] = true;
+	alertText[1] = "Please select a Unit Approver. \n";
+	}
+	if (duty == "(None)" ){
+	alertFlag[2] = true;
+	alertText[2] = "Please select a duty type. \n";
+	}
+	if (start == ""){
+	alertFlag[3] = true;
+	alertText[3] = "Please select a start date. \n";
+	}
+	if (end == ""){
+	alertFlag[4] = true;
+	alertText[4] = "Please select an end date";
+	}
+   var validationMsg = '';
+   for(var i =0; i< 5; i++){
+	   if(alertFlag[i] == true){
+		   validationMsg = validationMsg + alertText[i];
+		   noErrors = false;
+	   }
+   }
+   if (noErrors == false){
+	   alert(validationMsg);
+	   return false;
+   }
+   else{
+   return true;
+   }
+}
+function saveApp(){
+	if(PreSave() == true){
+		saveData(true);
+	}
+}
+function saveData(redirect){
+	$("#waitMsg").text("Please wait \n Saving your application")
+	$("#waitPopup").show();
+	var saveStatus = ["", "", "", "", "", ""];
+	var saveCheckLim = 4;
+	var saveGood = false;
+	var Applicant = $("select[title='Applicant'] option:selected").text();
+	var Approver = $("select[title='Unit_Approver'] option:selected").text();
+    var start =  $("input[title='Start_Date'] ").val();
+	var startArr = start.split("/");
+	start = startArr[2]+"-"+startArr[0]+"-"+startArr[1];
+	var end = $("input[title='End_Date'] ").val();
+	var endArr = end.split("/");
+	end = endArr[2]+"-"+endArr[0]+"-"+endArr[1];
+	var duty = $("select[title='Duty_Type'] option:selected").text();
+	var notes = $("textarea[title='Applicant_Notes'] ").val();
+	/* alert("Applicant: " + Applicant + "\n Approver: " + Approver + "\n Start: " +
+	start + "\n End: " + end + "\n Duty Type: " + duty + "\n Notes: " + notes); */
+	var applicantID = getLookupID("Member_Data_Basics", "Title_FullName", Applicant, "Text");
+	var approverID = getLookupID("Member_Data_Basics", "Title_FullName", Approver, "Text");
+	var dutyID = getLookupID("Z_Duty_Type", "Title", duty, "Text");
+	//save data to list fields and update the status
+	saveStatus[0] = writeToList("Task-Request", taskReqID.toString(), "Applicant", applicantID);
+	saveStatus[1] = writeToList("Task-Request", taskReqID.toString(), "Unit_Approver", approverID);
+	saveStatus[2] = writeToList("Task-Request", taskReqID.toString(), "Start_Date", start);
+	saveStatus[3] = writeToList("Task-Request", taskReqID.toString(), "End_Date", end);
+	saveStatus[4] = writeToList("Task-Request", taskReqID.toString(), "Duty_Type", dutyID);
+	
+	if (notes != ""){
+		saveStatus[5] = writeToList("Task-Request", taskReqID.toString(), "Applicant_Notes", notes);
+		saveCheckLim = 5;
+	}
+	for(x=0; x < saveCheckLim +1; x++){
+		if (saveStatus[x]=="0x00000000"){
+			saveGood = true;
+		}
+	}
+	//alert(saveGood);
+	if (saveGood == false){
+		$('#waitPopup').hide();
+		alert("Error saving application");
+	}
+	else if (redirect==true){
+	$('#waitPopup').delay(2000).fadeOut();
+	window.location.href = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/Lists/TaskRequest/taskVerify.aspx?ID=" + 
+	taskReqID + "&Source=https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SitePages/Start.aspx";
+	}
+	else{}
+	
+}
+function saveApproverData(){
+	$("#waitMsg").text("Please wait \n Saving the approver fields")
+	$("#waitPopup").show();
+	var saveStatus = ["", "", "", "", "", ""];
+	var saveGood = false;
+	var notes = $("textarea[title='Approver_Notes'] ").val();
+	var reject = $("textarea[title='reject_message'] ").val();
+	var start =  $("input[title='Start_Date'] ").val();
+	var startArr = start.split("/");
+	start = startArr[2]+"-"+startArr[0]+"-"+startArr[1];
+	var end = $("input[title='End_Date'] ").val();
+	var endArr = end.split("/");
+	end = endArr[2]+"-"+endArr[0]+"-"+endArr[1];
+	var duty = $("select[title='Duty_Type'] option:selected").text();
+	var dutyID = getLookupID("Z_Duty_Type", "Title", duty, "Text");
+	/* alert("Applicant: " + Applicant + "\n Approver: " + Approver + "\n Start: " +
+	start + "\n End: " + end + "\n Duty Type: " + duty + "\n Notes: " + notes); */
+	//save data to list fields and update the status
+	if (notes != ""){
+		saveStatus[0] = writeToList("Task-Request", taskReqID.toString(), "Approver_Notes", notes);
+	}
+	if (reject != ""){
+		saveStatus[1] = writeToList("Task-Request", taskReqID.toString(), "reject_message", reject);
+	}
+	saveStatus[2] = writeToList("Task-Request", taskReqID.toString(), "Start_Date", start);
+	saveStatus[3] = writeToList("Task-Request", taskReqID.toString(), "End_Date", end);
+	saveStatus[4] = writeToList("Task-Request", taskReqID.toString(), "Duty_Type", dutyID);
+	//alert(saveStatus[0]);
+	//alert(saveStatus[1]);
+	//alert(saveGood);
+	for(x=0; x < 5; x++){
+		if ((saveStatus[x]=="0x00000000") || (saveStatus[x] == "")){
+			saveGood = true;
+		}
+	}
+	if (saveGood == true){
+		$("#waitMsg").text("Save Successful");
+		$('#waitPopup').delay(3000).fadeOut();
+	}
+	else{
+	$('#waitPopup').hide();
+	alert("Error saving application");
+	}
+	
+}
+function determineFormMode(){
+if(forceFormMode ==0){
+	var formMode = 1;
+	var currentUserID = $().SPServices.SPGetCurrentUser({
+	fieldName: "ID", debug: false});
+	lookupSYbyID(ShipyardID); //gets PM and staff user IDs
+	switch(currentUserID){
+		case parseFloat(UA):
+			formMode = 2;
+			userRoleTxt = "Unit Approver";
+			break;
+		case parseFloat(TM):
+			formMode = 3;
+			userRoleTxt = "Task Manager";
+			break;
+		case parseFloat(PM):
+			formMode = 4;
+			userRoleTxt = "Program Manager";
+			break;
+		case parseFloat(SS):
+			formMode = 4;
+			userRoleTxt = "SY Staff";
+			break;
+		default:
+			formMode = 1;
+			userRoleTxt = "SurgeMain Sailor";
+	}
+	//check if user is TM and PM
+	if (currentUserID == parseFloat(TM) && (currentUserID == parseFloat(PM))){
+		formMode = 4;
+		userRoleTxt = "Program Manager and Task Manager";
+	}
+	if (currentUserID == parseFloat(TM) && (currentUserID == parseFloat(SS))){
+		formMode = 4;
+		userRoleTxt = "SY Staff and Task Manager";
+	}
+		//check if user is UA and TM
+	if (currentUserID == parseFloat(TM) && (currentUserID == parseFloat(UA)) && (currentUserID != parseFloat(PM)) && (currentUserID != parseFloat(SS))){
+		formMode = 3;
+		userRoleTxt = "Task Manager and Unit Approver";
+	}
+	return formMode;
+}
+else{return forceFormMode;}
+}
+function getUserName(userID){
+var currentUserID = $().SPServices.SPGetCurrentUser({
+		fieldName: "Name",
+		debug: false
+		});
+		//alert(currentUserID);
+		lookupSYbyID(ShipyardID);
+}
+function getUnapprovedTaskReqs(appID){
+var unmetNeedsMonths = [0,0,0,0,0,0,0,0,0,0,0,0];
+try{
+var query1 = "<Query>" +
+					"<Where>" +
+						"<And>" +
+							"<Or>" +
+								"<IsNotNull>" +
+										"<FieldRef Name='Applicant' />" +
+								"</IsNotNull>" +	
+								"<IsNotNull>" +
+										"<FieldRef Name='End_Date' />" +
+								"</IsNotNull>" +
+							"</Or>" +
+							"<And>" +
+								"<Eq>" +
+									"<FieldRef Name='TaskID' /><Value Type='Number'>" + appID + "</Value>" +
+								"</Eq>" +
+								"<In>" +
+									"<FieldRef Name='Status' LookupId='TRUE' />" +
+									"<Values>" +
+										"<Value Type='Lookup'>2</Value>" + //status is TM Approved
+										"<Value Type='Lookup'>1</Value>" + //status is Unit Approved
+										"<Value Type='Lookup'>6</Value>" + //status is Rejected
+										"<Value Type='Lookup'>7</Value>" + //status is Initial
+									"</Values>" +
+								"</In>" +
+							"</And>" +
+						"</And>" +	
+					"</Where>" +
+				"</Query>";				
+//alert(query1);				
+$().SPServices({
+				operation: "GetListItems",
+				listName: "Task-Request",
+				async: false,
+				CAMLViewFields: "<ViewFields><FieldRef Name='ID' /><FieldRef Name='Start_Month' /><FieldRef Name='TaskID' /></ViewFields>",
+				CAMLQuery: query1,
+				CAMLRowLimit: 0,
+				completefunc: function (xData, Status) {
+					//alert(Status);
+					//alert(xData.responseText);
+					//alert(xData.responseXML);	
+					$(xData.responseXML).SPFilterNode("z:row").each(function(){
+						//load the applications count by start month
+						var startMonth = $(this).attr("ows_Start_Month");
+						var startMonthNum = startMonth.split('#');
+						startMonth = startMonthNum[1];
+						var start = parseFloat(startMonth);
+						if(start <= 9){
+							unmetNeedsMonths[start+2] = unmetNeedsMonths[start+2]+1;
+						}
+						else{
+							unmetNeedsMonths[start-10] = unmetNeedsMonths[start-10]+1;
+						}
+					});
+					//var itemCount = $(xData.responseXML).SPFilterNode("rs:data").attr("ItemCount");
+					//alert("There are: " + itemCount + " unapproved task requests for this unmet need \n" + unmetNeedsMonths);
+					//alert("task manager approved: " + TMapproved + " Unit approved: " + UnitApproved);
+				}
+			});
+return unmetNeedsMonths;
+}
+catch(err2){
+//alert(err2);
+}
+}
+function lookupUnmetByID(itemID){
+	//Array of billets used for confirmation popup
+	var billetNum = [0,0,0,0,0,0,0,0,0,0,0,0];
+	var query1 = "<Query><Where><Eq><FieldRef Name='ID'/><Value Type='Number'>" + itemID + "</Value></Eq></Where></Query>";
+	//alert(query1);
+	try{
+	$().SPServices({
+            operation: "GetListItems",
+            listName: "Unmet_Needs",
+            async: false,
+            CAMLQuery: query1,
+            completefunc: function (xData, Status) {
+				//alert("lookupUnmetbyID: " + xData.responseText);//use this alert to see the list item returned
+				$(xData.responseXML).SPFilterNode("z:row").each(function(){
+					var tempSY = $(this).attr("ows_Shipyard");
+					var tempSYarr = tempSY.split(";");
+                    ShipyardID = tempSYarr[0];
+					//alert("SY ID: " + ShipyardID);
+					shipyardName = tempSYarr[1];
+					shipyardName = shipyardName.replace("#", "");
+					var tempShop = $(this).attr("ows_Shop")
+					var tempShoparr = tempShop.split(";");
+                    ShopID = tempShoparr[0];
+					shopName = tempShoparr[1];
+					shopName = shopName.replace("#", "");
+					//Populate the billets by month
+					billetNum[0] = parseFloat($(this).attr("ows_OCT"));
+					billetNum[1] = parseFloat($(this).attr("ows_NOV"));
+					billetNum[2] = parseFloat($(this).attr("ows_DEC"));
+					billetNum[3] = parseFloat($(this).attr("ows_JAN"));
+					billetNum[4] = parseFloat($(this).attr("ows_FEB"));
+					billetNum[5] = parseFloat($(this).attr("ows_MAR"));
+					billetNum[6] = parseFloat($(this).attr("ows_APR"));
+					billetNum[7] = parseFloat($(this).attr("ows_MAY"));
+					billetNum[8] = parseFloat($(this).attr("ows_JUN"));
+					billetNum[9] = parseFloat($(this).attr("ows_JUL"));
+					billetNum[10] = parseFloat($(this).attr("ows_AUG"));
+					billetNum[11] = parseFloat($(this).attr("ows_SEP"));
+					//applicationId = parseInt(AppId);
+					//alert(applicationId);
+                });
+            }
+        });
+	return billetNum;
+  }
+  catch(err2){
+  alert("Error looking up Unmet Needs: " + err2.message);
+  }
+}
+function getTaskID(appID){
+try{
+var query1 = "<Query>" +
+					"<Where>" +
+								"<Eq>" +
+									"<FieldRef Name='ID' /><Value Type='Number'>" + appID + "</Value>" + //ID of task-request
+								"</Eq>" +
+					"</Where>" +
+				"</Query>";		
+//alert(query1);				
+$().SPServices({
+				operation: "GetListItems",
+				listName: "Task-Request",
+				async: false,
+				CAMLQuery: query1,
+				CAMLRowLimit: 0,
+				completefunc: function (xData, Status) {
+					//alert(Status);
+					//alert("getTaskID response text: " + xData.responseText);
+					//alert(xData.responseXML);	
+					$(xData.responseXML).SPFilterNode("z:row").each(function(){
+						var TaskIDtxt = $(this).attr("ows_TaskID");
+						var TaskIDarr = TaskIDtxt.split('#');
+						taskID = parseFloat(TaskIDarr[1]);
+						var IndocIDtxt = $(this).attr("ows_Indoc_Dates");
+						var indocIDarr = IndocIDtxt.split('#');
+						IndocID = parseFloat(indocIDarr[1]);
+						var statusIDtxt = $(this).attr("ows_Status");
+						if(typeof(statusIDtxt) != "undefined") {
+						var statusIDarr = statusIDtxt.split('#');
+						appStatus = parseFloat(statusIDarr[0]);
+						}
+						else appStatus = 8;
+						var UAIDtxt = $(this).attr("ows_Unit_Approver");
+						var UAIDarr = UAIDtxt.split('#');
+						var UAmemberID = parseFloat(UAIDarr[0]);
+						var UAmember = lookupMember(UAmemberID);					
+						UA = UAmember;
+						TMapproved = $(this).attr("ows_TM_Approved");
+						UnitApproved = $(this).attr("ows_Unit_Approved");
+						var temptxt = $(this).attr("ows_Start_Month");
+						var temparr = temptxt.split('#');
+						taskStartMonth = parseInt(temparr[1]);
+						//alert("Unit Approver is:" + UA);
+					});
+				}
+			});
+
+			}
+catch(err2){
+//alert(err2);
+}
+}
+function lookupSYbyID(itemID){
+//Lookup PM username from Z_Shipyards List
+//alert(ShipyardID);
+	try{
+	$().SPServices({
+            operation: "GetListItems",
+            listName: "Z_SM_Shipyard",
+            async: false,
+            CAMLQuery: "<Query><Where><Eq><FieldRef Name='ID'/><Value Type='Number'>" + itemID + "</Value></Eq></Where></Query>",
+			CAMLViewFields: "<ViewFields><FieldRef Name='PM' /><FieldRef Name='Staff' /></ViewFields>",
+            completefunc: function (xData, Status) {
+				//alert("lookupSY response: " + xData.responseText);//use this alert to see the list item returned
+				$(xData.responseXML).SPFilterNode("z:row").each(function(){
+					var tempPM = String($(this).attr("ows_PM"));
+					var tempPMarr = tempPM.split(";");
+                    PM = tempPMarr[0];
+					var tempSS = String($(this).attr("ows_Staff"));
+					var tempSSarr = tempSS.split(";");
+                    SS = tempSSarr[0];
+					//alert("Shipyard PM is: " + PM + "\n Shipyard Staff is: " +  SS);
+					                });
+            }
+        });
+  }
+  catch(err2){
+  alert(err2.message);
+  }
+}
+function lookupTM(SY, Shop){            
+//Lookup TM username from Z_Task_Managers
+	try{
+	var query1 = "<Query>" +
+						"<Where><And>" +
+							"<Eq><FieldRef Name='Shipyard'/><Value Type='Lookup'>" + SY + "</Value></Eq>" +
+							"<Eq><FieldRef Name='Shop'/><Value Type='Lookup'>" + Shop + "</Value></Eq>" +
+						"</And></Where>" +
+					"</Query>";
+					//alert(query1);
+	$().SPServices({
+            operation: "GetListItems",
+            listName: "Z_Task_Managers",
+            async: false,
+            CAMLQuery: query1,
+            completefunc: function (xData, Status) {
+				//alert(xData.responseText);//use this alert to see the list item returned
+				$(xData.responseXML).SPFilterNode("z:row").each(function(){
+					var tempTM = String($(this).attr("ows_TM_User"));
+					
+					if (typeof(tempTM)=='undefined'){
+						alert("TM is undefined");
+						TM = PM;
+					}
+					else{
+					var tempTMarr = tempTM.split(";");
+					TMname = tempTMarr[1].replace('#', '');
+                    TM = tempTMarr[0];
+					}
+					//alert("Task Manager is: " + TM);
+					});
+            }
+        });
+  }
+  catch(err2){
+  alert("Error looking up Task Manager. No one is assigned to " + SY + " Shop " + Shop + "\n " +
+  "System Error message: " + err2.message);
+  }
+}
+function getIndocDates(itemID){
+	//Array of billets used for confirmation popup
+	var IndocDates = [0,0,0,0,0,0,0,0,0,0,0,0];
+	var query1 = "<Query><Where><Eq><FieldRef Name='ID'/><Value Type='Number'>" + itemID + "</Value></Eq></Where></Query>";
+	//alert(query1);
+	try{
+	$().SPServices({
+            operation: "GetListItems",
+            listName: "Indoc_Dates",
+            async: false,
+            CAMLQuery: query1,
+            completefunc: function (xData, Status) {
+				//alert(xData.responseText);//use this alert to see the list item returned
+				$(xData.responseXML).SPFilterNode("z:row").each(function(){
+					//Populate the billets by month
+					IndocDates[0] = parseFloat($(this).attr("ows_OCT"));
+					IndocDates[1] = parseFloat($(this).attr("ows_NOV"));
+					IndocDates[2] = parseFloat($(this).attr("ows_DEC"));
+					IndocDates[3] = parseFloat($(this).attr("ows_JAN"));
+					IndocDates[4] = parseFloat($(this).attr("ows_FEB"));
+					IndocDates[5] = parseFloat($(this).attr("ows_MAR"));
+					IndocDates[6] = parseFloat($(this).attr("ows_APR"));
+					IndocDates[7] = parseFloat($(this).attr("ows_MAY"));
+					IndocDates[8] = parseFloat($(this).attr("ows_JUN"));
+					IndocDates[9] = parseFloat($(this).attr("ows_JUL"));
+					IndocDates[10] = parseFloat($(this).attr("ows_AUG"));
+					IndocDates[11] = parseFloat($(this).attr("ows_SEP"));
+					//alert(IndocDates[0]);
+					//alert(shipyardName + "  " + shopName);
+					//applicationId = parseInt(AppId);
+					//alert(applicationId);
+                });
+            }
+        });
+	return IndocDates;
+  }
+  catch(err2){
+  alert(err2.message);
+  }
+}
+function lookupMember(memberID){
+//Lookup user from member data
+var tempUAarr;
+var memberFields;
+	try{
+	$().SPServices({
+            operation: "GetListItems",
+            listName: "Member_Data_Basics",
+            async: false,
+            CAMLQuery: "<Query><Where><Eq><FieldRef Name='ID'/><Value Type='Number'>" + memberID + "</Value></Eq></Where></Query>",
+            completefunc: function (xData, Status) {
+				//alert("lookupMember response: " + xData.responseText);//use this alert to see the list item returned
+				$(xData.responseXML).SPFilterNode("z:row").each(function(){
+					var tempUA = String($(this).attr("ows_User"));
+					tempUAarr = tempUA.split(";");
+                    //alert("member ID from lookupMember function: " + tempUAarr[0]);
+					
+				});					
+            }
+        });
+	return tempUAarr[0];
+  }
+  catch(err2){
+  alert(err2.message);
+  }
+}
+function unitApprove(){
+$('<div id="msg"></div>').dialog({
+        modal: true,
+        title: "Approval Status",
+		buttons: {
+            "Close": function () {
+                $(this).dialog("close");
+				location.reload(true);
+            }, 
+			"Exit to SWMS Home": function (){
+			window.location.href = 'https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms';
+			}
+        }
+	}); //end confirm dialog
+	$("#msg").html("Please wait... \n Approving this task \n using " + userRoleTxt + " workflow");
+		var listID = "{6521c89b-fc27-42a6-8a25-3573cfa33889}";
+		var UnitApprWF = "{7b8e4c05-08b2-471f-9d27-9330824a52a7}";
+		var itemURL = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/Lists/TaskRequest/";
+		itemURL = itemURL + taskReqID + "_.000";
+		$().SPServices({
+			operation: "StartWorkflow",
+			item: itemURL,
+			templateId: UnitApprWF,
+			workflowParameters: "<root />",
+			completefunc: function(xData, Status) {
+				if (Status == "error"){
+					$("#msg").html("Error approving this task!");
+					alert("Error approving this task. \n Contact Navsea Reserve IT support if this error persists");
+				}
+				else{
+					$("#msg").text("Task successfully Unit approved");
+				}
+			}
+		});
+	
+}
+function tmApprove(){
+$('<div id="msg"></div>').dialog({
+        modal: true,
+        title: "Approval Status",
+		buttons: {
+            "Close": function () {
+                $(this).dialog("close");
+				location.reload(true);
+            }, 
+			"Exit to TM Page": function (){
+			window.location.href = 'https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SitePages/TM.aspx';
+			}
+        }
+	}); //end notification dialog
+	$("#msg").html("Please wait... \n Approving this task \n using " + userRoleTxt + " workflow");
+		var listID = "{6521c89b-fc27-42a6-8a25-3573cfa33889}";
+		var TMApprWF = "{b06c88bc-5d24-40f5-8549-85fe16ed3668}";
+		var itemURL = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/Lists/TaskRequest/";
+		itemURL = itemURL + taskReqID + "_.000";
+		$().SPServices({
+			operation: "StartWorkflow",
+			item: itemURL,
+			templateId: TMApprWF,
+			workflowParameters: "<root />",
+			completefunc: function(xData, Status) {
+				if (Status == "error"){
+					$('#msg').html('Error approving this task!');
+					alert("Error approving this task. \n Contact Navsea Reserve IT support if this error persists");
+				}
+				else{
+					$("#msg").html("Task successfully approved");
+				}
+			}
+		});
+}
+function pmApprove(){
+	$('<div id="msg"></div>').dialog({
+        modal: true,
+        title: "Approval Status",
+		buttons: {
+            "Close": function () {
+                $(this).dialog("close");
+				location.reload(true);
+            }, 
+			"Exit to PM Page": function (){
+			window.location.href = 'https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SitePages/PM.aspx';
+			}
+        }
+	}); //end confirm dialog
+            var markup = 'Starting the Approval workflow...';
+            $('#msg').html(markup);
+			var listID = "{6521c89b-fc27-42a6-8a25-3573cfa33889}";
+			var itemURL = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/Lists/TaskRequest/";
+			var BCNissueWF = "{27202ca7-089a-4075-bd6c-ada52ae66315}";
+			itemURL = itemURL + taskReqID + "_.000";
+			var valPairs;
+			$().SPServices({
+				operation: "StartWorkflow",
+				item: itemURL,
+				templateId: BCNissueWF,
+				workflowParameters: "<root />",
+				completefunc: function(xData, Status) {
+					if (Status == "error"){
+						$('#msg').html('Error with approval workflow.');
+						alert("Error approving this task. \n Contact Navsea Reserve IT support if this error persists");
+					}
+					else {
+						//decrement the unmet needs*********************************************
+						var monthNames = ["", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+						var months = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+						var billetsIndex = months.indexOf(taskStartMonth);
+						var x;
+						var monthStartName;
+						for(x=0; x <monthNames.length; x++){
+							if(x == taskStartMonth){
+								monthStartName = monthNames[x];
+							}
+						}
+						var billetsChg = billets[billetsIndex]-1;
+						$("#msg").append("<br></br>Changing " + monthStartName + " billets to " + billetsChg);
+						var updateUnmetResult = updateUnmetNeeds(monthStartName, billets[billetsIndex]-1, taskID);
+						if (updateUnmetResult = true){
+							$('#msg').append('<br></br>Unmet Needs successfully updated');
+							$('#msg').append('<br></br>Completed PM Approval');
+						}
+						else{
+						$('#msg').html('Error with approval workflow.');
+						alert("Notifications were sent but the Unmet Needs were not adjusted due to an error");
+						}
+					}
+				}
+			});	
+}
+function approveTask(resendBCN){
+	formMode = determineFormMode();
+	if (formMode == 2){
+		unitApprove();
+	}
+	else if (formMode == 3){
+		tmApprove();
+	}
+	else if (formMode ==4){
+		pmApprove();
+	}
+	else if (resendBCN == true){
+		resendBCN();
+	}
+}
+function rejectTask(){
+		//make sure the task doesn't already have a BCN issued
+		if((appStatus == 3 || appStatus == 4 || appStatus ==5) ){
+			alert("Cannot reject this task, a BCN has already been issued or the task has been cancelled");
+			}
+			else{
+				//reject the task by running the task reject workflow
+				$('<div id="msg"></div>').dialog({
+					modal: true,
+					title: "Reject Status",
+					buttons: {
+						"Close": function () {
+							$(this).dialog("close");
+							location.reload(true);
+						}, 
+						"Exit to SWMS Home": function (){
+						window.location.href = 'https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms';
+						}	
+					}
+				}); //end dialog
+				$("#msg").html("Please wait...<br></br>Starting task reject workflow");
+				var listID = "{6521c89b-fc27-42a6-8a25-3573cfa33889}";
+				var templateID = "{f9a83cc0-fa19-41b6-a495-7f0a89a39b61}";
+				var itemURL = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/Lists/TaskRequest/";
+				itemURL = itemURL + taskReqID + "_.000";
+				//execute the proper WF
+				$().SPServices({
+					operation: "StartWorkflow",
+					item: itemURL,
+					templateId: templateID,
+					workflowParameters: "<root />",
+					completefunc: function(xData, Status) {
+						if (Status == "error"){
+						$("#msg").html("Error rejecting task!");
+						alert("Error rejecting this task. \n Contact Navsea Reserve IT support if this error persists");
+						}
+						else{
+							$("#msg").append("<br></br>Task reject workflow completed successfully");
+						}
+					}
+				});
+			}
+
+}
+function cancelBCN(){
+	//make sure the task doesn't already have a BCN issued
+	formMode = determineFormMode();
+	if(appStatus != 3 ){
+		alert("Cannot cancel. A BCN was not issued for this task");
+	}
+	else if(formMode != 4){
+		alert("Only a Program Manager may cancel a BCN");
+	}
+	else{
+		$('<div id="msg"></div>').dialog({
+        modal: true,
+        title: "Approval Status",
+		buttons: {
+            "Close": function () {
+                $(this).dialog("close");
+				location.reload(true);
+            }, 
+			"Exit to PM Page": function (){
+			window.location.href = 'https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SitePages/PM.aspx';
+			}
+        }
+		}); //end confirm dialog
+		$("#msg").append("Please wait... \nCanceling BCN");
+		//reject the task by running the task reject workflow
+		var listID = "{6521c89b-fc27-42a6-8a25-3573cfa33889}";
+		var templateID = "{64e1c8ff-f291-4a72-b5f2-b6e7f4b11a88}";
+		var itemURL = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/Lists/TaskRequest/";
+		itemURL = itemURL + taskReqID + "_.000";
+		//execute the proper WF
+		$().SPServices({
+			operation: "StartWorkflow",
+			item: itemURL,
+			templateId: templateID,
+			workflowParameters: "<root />",
+			completefunc: function(xData, Status) {
+				if (Status == "error"){
+					$("#msg").html("Error cancelling BCN!");
+					alert("Error canceling this task. \n Contact Navsea Reserve IT support if this error persists");
+				}
+				else{
+					var monthNames = ["", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+					var months = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+					var billetsIndex = months.indexOf(taskStartMonth);
+					var x;
+					var monthStartName;
+					for(x=0; x <monthNames.length; x++){
+						if(x == taskStartMonth){
+							monthStartName = monthNames[x];
+							//alert(monthStartName);
+						}
+					}
+					var billetsChg = billets[billetsIndex]+1;
+					$("#msg").append("<br></br>Changing " + monthStartName + " billets to " + billetsChg);
+					var updateUnmetResult = updateUnmetNeeds(monthStartName, billets[billetsIndex]+1, taskID);
+					if (updateUnmetResult == false){
+						$("#msg").html("Error recrediting the BCN!");
+						alert("Error updating Unmet Needs. \n Manual update will be required");
+					}
+					$("#msg").append("<br></br>Success! Completed BCN Cancel");
+				}
+			}
+		});
+				
+	}
+}
+function resendBCN(){
+$('<div id="msg"></div>').dialog({
+        modal: true,
+        title: "Resend BCN Message",
+		height: 200,
+		width: 350,
+		buttons: {
+            "Close": function () {
+                $(this).dialog("close");
+				location.reload(true);
+            }, 
+			"Exit to PM Page": function (){
+			window.location.href = 'https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SitePages/PM.aspx';
+			},
+			"Exit to TM Page": function (){
+			window.location.href = 'https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/SitePages/TM.aspx';
+			},
+			"Exit to Home Page": function (){
+			window.location.href = 'https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms';
+			}
+        }
+	}); //end notification dialog
+	$("#msg").html("Please wait... \n Resending BCN message \n ");
+		var listID = "{6521c89b-fc27-42a6-8a25-3573cfa33889}";
+		var resendWF = "{8b0fb34c-dd95-4f62-82ff-6cb5f726573e}";
+		var itemURL = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/Lists/TaskRequest/";
+		itemURL = itemURL + taskReqID + "_.000";
+		$().SPServices({
+			operation: "StartWorkflow",
+			item: itemURL,
+			templateId: resendWF,
+			workflowParameters: "<root />",
+			completefunc: function(xData, Status) {
+				if (Status == "error"){
+					$('#msg').html('Error resending BCN!');
+					alert("Error resending BCN. \n Contact Navsea Reserve IT support if this error persists");
+				}
+				else{
+					$("#msg").html("BCN message successfully sent to Applicant");
+				}
+			}
+		});
+
+}
+function updateUnmetNeeds(month, num, ID){
+	var result;
+	if (typeof(num) == undefined){
+	alert("Unable to determine existing number of billets \n Exiting function");
+	return 0;
+	}
+	try{	
+		$().SPServices({
+			operation: "UpdateListItems",
+			listName: "Unmet_Needs",
+			async: false,
+			ID: ID,
+			valuepairs: [[month, num]],
+			completefunc: function(xData, Status) {
+				if(Status == "success"){result = true;}
+				else{result = false;}
+				return result;
+			}
+		});
+		}
+		catch(error){
+		result = false;
+		}			
+return result;
+}
+function getAttachmentFiles(listName,listItemId,complete){
+   $().SPServices({
+        operation: "GetAttachmentCollection",
+        async: false,
+        listName: listName,
+        ID: listItemId,
+        completefunc: function(xData, Status) {
+            var attachmentFileUrls = [];    
+            $(xData.responseXML).find("Attachment").each(function() {
+               var url = $(this).text();
+               attachmentFileUrls.push(url);
+            });
+			//alert(xData.responseText);
+            complete(attachmentFileUrls);
+        }
+   });
+}
+function delAtt(filePath, attachLink){
+var apprConfirm = confirm("Delete this attachment?");
+if (apprConfirm == true){			
+$().SPServices({
+    operation: "DeleteAttachment",
+    listName: "Task-Request",
+    listItemID: taskReqID, 
+    url: filePath, //url of attachment that needs to be deleted
+    completefunc: function (xData, Status) {
+		if(Status == "success"){
+		$(attachLink).parent().remove();
+		}
+    }
+});
+}
+else{}
+}
+function editUnmet(){
+var strWindowFeatures = "location=yes,resizable=yes,scrollbars=yes,status=yes";
+var URL = "https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/Lists/Unmet_Needs1/EditForm.aspx?ID=" + taskID;
+var win = window.open(URL, "_blank", strWindowFeatures);
+}
+function openpageindialog() {
+		saveData(false);
+		var taskID = ""
+		if (taskReqID.toString() != ""){taskID = taskReqID.toString();}
+        var options = {
+            url: 'https://navsea.portal.navy.mil/hq/10a/total-force/rpo/surgemain/swms/_layouts/Attachfile.aspx?ListId={6521c89b-fc27-42a6-8a25-3573cfa33889}&ItemId=' + taskID,
+            title: 'Add Attachment',
+            width: 600,
+            height: 200,     
+			dialogReturnValueCallback: RefreshOnDialogClose 
+        }; 
+        SP.UI.ModalDialog.showModalDialog(options);
+    }
+function get_browser_info(){
+    var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || []; 
+    if(/trident/i.test(M[1])){
+        tem=/\brv[ :]+(\d+)/g.exec(ua) || []; 
+        return {name:'IE',version:(tem[1]||'')};
+        }   
+    if(M[1]==='Chrome'){
+        tem=ua.match(/\bOPR\/(\d+)/)
+        if(tem!=null)   {return {name:'Opera', version:tem[1]};}
+        }   
+    M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+    if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+    return {
+      name: M[0],
+      version: M[1]
+    };
+ }
+ function getLookupID(listName, fieldName, fieldValue, valueType){//Used by saveData function
+	var itemID;
+	var query1 = "<Query><Where><Eq><FieldRef Name='" + fieldName + "'/><Value Type='" +
+	valueType +"'>" + fieldValue + "</Value></Eq></Where></Query>"
+	$().SPServices({
+            operation: "GetListItems",
+            listName: listName,
+            async: false,
+            CAMLQuery: query1,
+            completefunc: function (xData, Status) {
+				//alert(xData.responseText);
+				$(xData.responseXML).SPFilterNode("z:row").each(function(){
+				itemID = $(this).attr("ows_ID");
+				});
+			}
+	 });
+ return itemID;
+ }
+function writeToList(listName, itemID, fieldName, fieldValue ){
+	var responseErr;
+	$().SPServices({
+	  operation: "UpdateListItems",
+	  async: false,
+	  debug:true,
+	  listName: listName,
+	  ID: itemID,
+	  valuepairs: [[fieldName, fieldValue]],
+	  completefunc: function (xData, Status) {
+		//alert(xData.responseText);
+		responseErr = $(xData.responseXML).find("ErrorCode").text();
+		//alert("Saved " + fieldName)
+	  }
+	});
+return responseErr;
+}
+function showComments(){
+alert("This feature not yet complete");
+//$("#comments").show();
+}
+function hideComments(){
+$("#comments").hide();
+}
+</script>
